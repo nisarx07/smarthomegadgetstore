@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartHomeZone - Auth Portal</title>
+  <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #0d1117;
+    color: #c9d1d9;
+  }
+
+  .auth-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(13, 17, 23, 0.85);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .auth-overlay.active {
+    display: flex;
+  }
+
+  .auth-card {
+    background-color: #161b22;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #000;
+    width: 350px;
+    display: none;
+  }
+
+  .auth-card.active {
+    display: block;
+  }
+
+  .auth-card h2 {
+    text-align: center;
+    color: #58a6ff;
+    margin-bottom: 1.5rem;
+  }
+
+  .auth-card form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .auth-card input {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #30363d;
+    background-color: #0d1117;
+    border-radius: 6px;
+    color: #c9d1d9;
+  }
+
+  .auth-card button {
+    padding: 0.75rem;
+    background-color: #238636;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+
+  .auth-card button:hover {
+    background-color: #2ea043;
+  }
+
+  .auth-links {
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  .auth-links a {
+    color: #58a6ff;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0.25rem;
+  }
+
+  .auth-links a:hover {
+    color: #2ea043;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="container">
+   <div class="logo">
+ 
+  <span>SmartHome Gadgets Store</span>
+</div>
+
+    <nav class="nav">
+      <a href="#features">Features</a>
+      <a href="#products">Products</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="header-buttons">
+      <a href="#shop" class="btn primary">Shop Now</a>
+      <button id="openRegister">Sign Up</button>
+    </div>
+  </div>
+</header>
+
+<!-- Authentication Overlay with Card -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card" id="authCard">
+    <h2 id="formTitle">Login</h2>
+    <form id="authForm">
+      <div id="nameField" >
+<span class="close-auth" onclick="closeAuthForm()">&times;</span>
+
+        <input type="text" id="fullName" placeholder="Full Name" />
+      </div>
+      <input type="email" id="email" placeholder="Email" required />
+      <div id="passwordField" class="password-wrapper">
+        <input type="password" id="password" placeholder="Password" required />
+      </div>
+      <div id="confirmPasswordField" class="hidden">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+      </div>
+      <button type="submit" id="authBtn">Login</button>
+    </form>
+    <div class="auth-links">
+      <a id="toggleLink" onclick="switchToSignup()">New user? Create account</a><br>
+      <a id="forgotLink" onclick="switchToForgot()">Forgot Password?</a>
+    </div>
+  </div>
+</div>
+
+<!-- Authentication Script -->
+<script>
+  const formTitle = document.getElementById('formTitle');
+  const authBtn = document.getElementById('authBtn');
+  const toggleLink = document.getElementById('toggleLink');
+  const forgotLink = document.getElementById('forgotLink');
+  const nameField = document.getElementById('nameField');
+  const confirmPasswordField = document.getElementById('confirmPasswordField');
+  const passwordField = document.getElementById('passwordField');
+  const authCard = document.getElementById('authCard');
+  const authOverlay = document.getElementById('authOverlay');
+  const openRegisterBtn = document.getElementById('openRegister');
+
+  let mode = 'login';
+
+  function switchToSignup() {
+    mode = 'signup';
+    formTitle.textContent = 'Create Account';
+    authBtn.textContent = 'Sign Up';
+    toggleLink.textContent = 'Already have an account? Login';
+    toggleLink.setAttribute('onclick', 'switchToLogin()');
+    forgotLink.classList.add('hidden');
+    nameField.classList.remove('hidden');
+    confirmPasswordField.classList.remove('hidden');
+    passwordField.classList.remove('hidden');
+  }
+
+  function switchToLogin() {
+    mode = 'login';
+    formTitle.textContent = 'Login';
+    authBtn.textContent = 'Login';
+    toggleLink.textContent = 'New user? Create account';
+    toggleLink.setAttribute('onclick', 'switchToSignup()');
+    forgotLink.classList.remove('hidden');
+    nameField.classList.add('hidden');
+    confirmPasswordField.classList.add('hidden');
+    passwordField.classList.remove('hidden');
+  }
+
+  function switchToForgot() {
+    mode = 'forgot';
+    formTitle.textContent = 'Forgot Password';
+    authBtn.textContent = 'Reset Password';
+    toggleLink.textContent = 'Back to Login';
+    toggleLink.setAttribute('onclick', 'switchToLogin()');
+    nameField.classList.add('hidden');
+    confirmPasswordField.classList.add('hidden');
+    passwordField.classList.add('hidden');
+    forgotLink.classList.add('hidden');
+  }
+
+  document.getElementById('authForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (mode === 'login') {
+      alert('Logging in...');
+    } else if (mode === 'signup') {
+      alert('Creating new account...');
+    } else if (mode === 'forgot') {
+      alert('Sending password reset...');
+    }
+  });
+
+  // Show Login popup on "Sign Up" button click
+  openRegisterBtn.addEventListener('click', function () {
+    switchToLogin();
+    authOverlay.classList.add('active');
+    authCard.classList.add('active'); // <-- Make sure to add this
+  });
+
+  // Close popup if clicking outside the card
+  authOverlay.addEventListener('click', function (e) {
+    if (e.target === authOverlay) {
+      authOverlay.classList.remove('active');
+      authCard.classList.remove('active'); // <-- Also hide card
+    }
+  });
+</script>
+
+
+
+
+<section class="hero">
+  <div class="hero-content">
+    <h1>Upgrade Your Home. <br><span class="highlight">Live Smarter.</span></h1>
+    <p>Explore cutting-edge smart home gadgets that bring comfort, security, and convenience to your fingertips.</p>
+    <div class="hero-buttons">
+      <a href="#shop" class="btn primary">Shop Now</a>
+      <a href="#features" class="btn secondary">Explore Features</a>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="\Users\pc\Downloads\Flux_Dev_A_modern_stylish_smart_home_interior_with_soft_ambien_1.jpg" />
+  </div>
+</section>
+
+
+<section class="trusted-brands">
+  <h2>Trusted by Leading Brands</h2>
+  <div class="brand-logos">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google">
+    <img src="\Users\pc\Downloads\amazon.jpg" alt="Amazon">
+    <img src="\Users\pc\Downloads\philipa.jpg" alt="Philips">
+    <img src="\Users\pc\Downloads\samsung.jpg" alt="Samsung">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple">
+  </div>
+</section>
+
+
+<section class="top-categories">
+  <h2>Explore Top Categories</h2>
+  <div class="category-grid">
+    <div class="category-card">
+      <img src="https://img.icons8.com/ios-filled/100/ffffff/light-on.png" alt="Smart Lighting">
+      <h3>Smart Lighting</h3>
+      <p>Automate your home’s ambiance with smart lights and scenes.</p>
+      <a href="#lighting" class="btn">View Products</a>
+    </div>
+    <div class="category-card">
+      <img src="https://img.icons8.com/ios-filled/100/ffffff/lock-2.png" alt="Smart Security">
+      <h3>Smart Security</h3>
+      <p>Protect your space with intelligent locks, cameras, and sensors.</p>
+      <a href="#security" class="btn">View Products</a>
+    </div>
+    <div class="category-card">
+      <img src="https://img.icons8.com/ios-filled/100/ffffff/speaker.png" alt="Smart Speakers">
+      <h3>Smart Speakers</h3>
+      <p>Voice assistants that help you play music, manage tasks, and more.</p>
+      <a href="#speakers" class="btn">View Products</a>
+    </div>
+    <div class="category-card">
+      <img src="\Users\pc\Downloads\climate control.jpg" alt="Climate Control">
+      <h3>Climate Control</h3>
+      <p>Maintain the perfect temperature with smart thermostats.</p>
+      <a href="#climate" class="btn">View Products</a>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="why-choose-us">
+  <h2>Why Choose Us</h2>
+  <p class="subtitle">Smart solutions designed for modern living.</p>
+  
+  <div class="value-grid">
+    <div class="value-card">
+      <img src="\Users\pc\Downloads\trsut3.png" alt="Trusted Quality" />
+      <h3>Trusted Quality</h3>
+      <p>We partner with top-tier brands to bring you only the most reliable and secure smart devices.</p>
+    </div>
+
+    <div class="value-card">
+      <img src="https://img.icons8.com/ios-filled/100/58a6ff/rocket.png" alt="Fast Delivery" />
+      <h3>Fast Delivery</h3>
+      <p>Get your gadgets delivered quickly and safely, with real-time tracking and updates.</p>
+    </div>
+
+    <div class="value-card">
+      <img src="https://img.icons8.com/ios-filled/100/58a6ff/customer-support.png" alt="24/7 Support" />
+      <h3>24/7 Support</h3>
+      <p>Our support team is always ready to assist — day or night — for a hassle-free experience.</p>
+    </div>
+
+    <div class="value-card">
+      <img src="https://img.icons8.com/ios-filled/100/58a6ff/discount.png" alt="Exclusive Offers" />
+      <h3>Exclusive Offers</h3>
+      <p>Enjoy members-only deals, early product releases, and limited-time discounts.</p>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="smart-bundles">
+  <h2>Smart Bundles & Best Deals</h2>
+  <p class="subtitle">Upgrade your home and save more with our exclusive bundles.</p>
+
+  <div class="bundle-grid">
+    <!-- Bundle 1 -->
+    <div class="bundle-card">
+      <h3>Essential Smart Starter Pack</h3>
+      <ul>
+        <li>🔌 Smart Plug (2x)</li>
+        <li>💡 Smart Bulb (3x)</li>
+        <li>🔊 Voice Assistant Hub</li>
+      </ul>
+      <div class="price">
+        <span class="old-price">$129.99</span>
+        <span class="new-price">$89.99</span>
+      </div>
+      <a href="#" class="bundle-btn">Shop Bundle</a>
+    </div>
+
+    <!-- Bundle 2 -->
+    <div class="bundle-card">
+      <h3>Security Pro Kit</h3>
+      <ul>
+        <li>📷 Smart Indoor Camera</li>
+        <li>🔐 Smart Door Lock</li>
+        <li>🛡️ Motion Sensor</li>
+      </ul>
+      <div class="price">
+        <span class="old-price">$249.99</span>
+        <span class="new-price">$199.99</span>
+      </div>
+      <a href="#" class="bundle-btn">Get This Deal</a>
+    </div>
+
+    <!-- Bundle 3 -->
+    <div class="bundle-card">
+      <h3>Complete Smart Home Bundle</h3>
+      <ul>
+        <li>💡 Lighting Set</li>
+        <li>🌡️ Thermostat</li>
+        <li>🔊 Smart Speaker</li>
+        <li>🔐 Door Lock</li>
+      </ul>
+      <div class="price">
+        <span class="old-price">$499.99</span>
+        <span class="new-price">$379.99</span>
+      </div>
+      <a href="#" class="bundle-btn">Buy Now</a>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<footer class="sticky-footer">
+  <div class="footer-left">
+    <span>&copy; 2025 SmartHomeZone</span>
+  </div>
+  <div class="footer-right">
+    <a href="#">Home</a>
+    <a href="#">Shop</a>
+    <a href="#">Cart</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+
+
+
+
+<footer class="main-footer">
+  <div class="footer-container">
+
+    <!-- Column 1: Brand -->
+    <div class="footer-col">
+      <h3>SmartHomeZone</h3>
+      <p>Bringing intelligence to every corner of your home with cutting-edge smart gadgets.</p>
+    </div>
+
+    <!-- Column 2: Quick Links -->
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Shop</a></li>
+        <li><a href="#">Bundles</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+
+    <!-- Column 3: Support -->
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">FAQs</a></li>
+        <li><a href="#">Shipping & Returns</a></li>
+        <li><a href="#">Warranty</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+      </ul>
+    </div>
+
+    <!-- Column 4: Contact & Social -->
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <p>Email: support@smarthomezone.com</p>
+      <p>Phone: +1 (800) 555-1234</p>
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-x-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2025 SmartHomeZone. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- Font Awesome CDN for social icons (if needed) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+
+
+
+
+
+
+
+
+</body>
+</html>
